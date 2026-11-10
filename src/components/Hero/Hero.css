@@ -1,0 +1,8 @@
+
+.hero-subtitle {
+  margin-top: 24px;
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(16px, 2vw, 21px);
+  font-weight: 400;
+  color: #aaaaaa;
+}

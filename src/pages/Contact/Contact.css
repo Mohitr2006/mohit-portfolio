@@ -1,0 +1,252 @@
+
+/* CONTACT PAGE */
+
+.contact-page {
+  min-height: 100vh;
+  width: 100%;
+  padding: 150px 8% 100px;
+}
+
+/* HERO */
+
+.contact-hero {
+  max-width: 800px;
+  margin: 0 auto 55px;
+  text-align: center;
+}
+
+.contact-label {
+  display: inline-block;
+  color: #5e8090;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  margin-bottom: 20px;
+}
+
+.contact-hero h1 {
+  color: #000;
+  font-size: clamp(42px, 6vw, 68px);
+  margin-bottom: 20px;
+}
+
+.contact-hero p {
+  color: #555;
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+/* TWO COLUMN GRID */
+
+.contact-grid {
+  width: 100%;
+  max-width: 1380px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 30px;
+  align-items: stretch;
+}
+
+/* CARD */
+
+.contact-card {
+  width: 100%;
+  min-width: 0;
+  min-height: 280px;
+  display: flex;
+}
+
+.contact-card > * {
+  width: 100% !important;
+  min-height: 280px !important;
+}
+
+/* CARD CONTENT - LEFT ALIGNED */
+
+.contact-card-content {
+  width: 100% !important;
+  min-height: 280px !important;
+  padding: 35px !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+
+  text-align: left !important;
+  gap: 12px;
+}
+
+/* ICON */
+
+.contact-card-content .contact-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 5px;
+}
+
+.contact-card-content .contact-icon svg {
+  display: block;
+  width: 32px;
+  height: 32px;
+}
+
+/* TEXT */
+
+.contact-card-content .contact-card-name {
+  color: #fff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.contact-card-content .contact-card-subtitle {
+  color: rgba(255,255,255,.75);
+  font-size: 14px;
+}
+
+.contact-card-content .contact-card-detail {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* LINK BUTTON */
+
+.contact-link-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  align-self: flex-start;
+  margin-top: 12px;
+  padding: 11px 20px;
+
+  border: 1px solid rgba(255,255,255,.5);
+  border-radius: 8px;
+  background: rgba(255,255,255,.12);
+
+  color: #fff !important;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+
+  transition: all .3s ease;
+}
+
+.contact-link-button:hover {
+  background: #fff;
+  color: #252a2e !important;
+  transform: translateY(-3px);
+}
+
+.contact-link-button span {
+  color: inherit;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 750px) {
+  .contact-page {
+    padding: 130px 6% 70px;
+  }
+
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+
+/* CONTACT SPECULAR BUTTON ALIGNMENT */
+
+.contact-specular {
+  width: 100% !important;
+  min-height: 280px !important;
+  height: 100%;
+  display: flex !important;
+  justify-content: flex-start !important;
+  align-items: stretch !important;
+  padding: 35px !important;
+  text-align: left !important;
+}
+
+/* Make the label fill the card */
+
+.contact-specular .specular-button__label {
+  width: 100% !important;
+  height: 100%;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  text-align: left !important;
+  gap: 12px !important;
+}
+
+/* Keep every item on the same left edge */
+
+.contact-specular .contact-card-content {
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  text-align: left !important;
+  padding: 0 !important;
+}
+
+.contact-specular .contact-icon {
+  align-self: flex-start !important;
+}
+
+.contact-specular .contact-card-name,
+.contact-specular .contact-card-subtitle,
+.contact-specular .contact-card-detail {
+  width: 100%;
+  text-align: left !important;
+}
+
+.contact-specular .contact-link-button {
+  align-self: flex-start !important;
+}
+
+
+/* REDUCE CONTACT CARD HEIGHT */
+
+.contact-specular {
+  min-height: 230px !important;
+  height: 230px !important;
+  padding: 25px 30px !important;
+}
+
+.contact-card {
+  min-height: 230px;
+}
+
+.contact-card-content {
+  min-height: 180px !important;
+  gap: 9px !important;
+}
+
+/* Slightly smaller icon */
+.contact-icon {
+  width: 30px !important;
+  height: 30px !important;
+}
+
+.contact-icon svg {
+  width: 27px !important;
+  height: 27px !important;
+}
+
+/* Slightly tighter button spacing */
+.contact-link-button {
+  margin-top: 7px !important;
+  padding: 9px 17px !important;
+}

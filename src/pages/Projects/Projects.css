@@ -1,0 +1,29 @@
+
+.projects-page {
+  min-height: 100vh;
+  padding: 140px 8% 80px;
+}
+
+.projects-page > h1 {
+  color: #000000;
+  text-align: center;
+  font-size: clamp(36px, 5vw, 60px);
+}
+
+.projects-subtitle {
+  color: #555555;
+  text-align: center;
+  margin: 16px 0 55px;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 25px;
+}
+
+@media (max-width: 700px) {
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+}
