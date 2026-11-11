@@ -150,11 +150,12 @@ function Photography() {
             onClick={() => openPhoto(photo)}
             aria-label={`View full image: ${photo.alt}`}
           >
-            <img
-              src={photo.src}
-              alt={photo.alt}
-              loading="lazy"
-            />
+          <img
+            src={photo.src}
+            alt={photo.alt}
+            loading="lazy"
+            decoding="async"
+          />
 
             <div className="photo-hover-overlay">
               <span>View Full Image</span>
