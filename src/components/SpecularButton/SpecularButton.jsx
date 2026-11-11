@@ -255,7 +255,9 @@ function SpecularButton({
     gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
     gl.bindVertexArray(null);
 
-    const probe = document.createElement("canvas").getContext("2d");
+    const probe = document
+      .createElement("canvas")
+      .getContext("2d", { willReadFrequently: true });
     const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
     const colors = new Map();
     const view = { width: 1, height: 1, ratio: 1 };

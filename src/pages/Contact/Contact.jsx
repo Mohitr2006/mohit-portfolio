@@ -1,5 +1,4 @@
 
-import SpecularButton from "../../components/SpecularButton/SpecularButton";
 import "./Contact.css";
 
 const contacts = [
@@ -92,7 +91,6 @@ function ContactIcon({ type }) {
 function Contact() {
   return (
     <section className="contact-page">
-
       <div className="contact-hero">
         <span className="contact-label">GET IN TOUCH</span>
 
@@ -107,67 +105,52 @@ function Contact() {
       <div className="contact-grid">
         {contacts.map((contact) => (
           <div className="contact-card" key={contact.name}>
-
-            <SpecularButton
+            <div
               className="contact-specular"
-              size="lg"
-              radius={22}
-              tint={contact.tint}
-              tintOpacity={1}
-              textColor="#ffffff"
-              lineColor={contact.line}
-              baseColor={contact.line}
-              intensity={1}
-              idleIntensity={0.3}
-              shineSize={10}
-              shineFade={34}
-              thickness={1.2}
-              glow={1}
-              followMouse
-              proximity={250}
+              style={{
+                background: contact.tint,
+                borderColor: contact.line,
+              }}
             >
-              <div className="contact-card-content">
+              <div className="specular-button__label">
+                <div className="contact-card-content">
+                  <span className="contact-icon">
+                    <ContactIcon type={contact.icon} />
+                  </span>
 
-                <span className="contact-icon">
-                  <ContactIcon type={contact.icon} />
-                </span>
+                  <span className="contact-card-name">
+                    {contact.name}
+                  </span>
 
-                <span className="contact-card-name">
-                  {contact.name}
-                </span>
+                  <span className="contact-card-subtitle">
+                    {contact.subtitle}
+                  </span>
 
-                <span className="contact-card-subtitle">
-                  {contact.subtitle}
-                </span>
+                  <span className="contact-card-detail">
+                    {contact.detail}
+                  </span>
 
-                <span className="contact-card-detail">
-                  {contact.detail}
-                </span>
-
-                <a
-                  href={contact.url}
-                  target={
-                    contact.url.startsWith("mailto:")
-                      ? "_self"
-                      : "_blank"
-                  }
-                  rel="noopener noreferrer"
-                  className="contact-link-button"
-                  onClick={(event) => event.stopPropagation()}
-                >
-                  {contact.name === "Email"
-                    ? "Send Email"
-                    : "Visit Profile"}
-                  <span>↗</span>
-                </a>
-
+                  <a
+                    href={contact.url}
+                    target={
+                      contact.url.startsWith("mailto:")
+                        ? "_self"
+                        : "_blank"
+                    }
+                    rel="noopener noreferrer"
+                    className="contact-link-button"
+                  >
+                    {contact.name === "Email"
+                      ? "Send Email"
+                      : "Visit Profile"}
+                    <span>↗</span>
+                  </a>
+                </div>
               </div>
-            </SpecularButton>
-
+            </div>
           </div>
         ))}
       </div>
-
     </section>
   );
 }

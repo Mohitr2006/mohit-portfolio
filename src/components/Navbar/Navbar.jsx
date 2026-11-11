@@ -27,7 +27,7 @@ function Navbar() {
     <nav className="navbar-container">
       <GooeyNav
         items={items}
-        initialActiveIndex={currentIndex === -1 ? 0 : currentIndex}
+        activeIndex={currentIndex === -1 ? 0 : currentIndex}
         theme="dark"
         size="lg"
         frame

@@ -269,11 +269,18 @@ const GooeyNav = ({
     const fallback = fallbackRef.current;
     if (!stage || !canvas || !list || !overlay || !fallback) return;
 
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const gl = canvas.getContext('webgl2', { alpha: true, premultipliedAlpha: true, antialias: false });
-    const pipeline = gl ? build(gl) : null;
-    fallback.style.display = pipeline ? 'none' : 'block';
-    canvas.style.display = pipeline ? 'block' : 'none';
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const gl = canvas.getContext('webgl2', {
+    alpha: true,
+    premultipliedAlpha: true,
+    antialias: false
+  });
+
+  const pipeline = gl ? build(gl) : null;
+
+  fallback.style.display = pipeline ? 'none' : 'block';
+  canvas.style.display = pipeline ? 'block' : 'none';
 
     const view = { width: 0, height: 0 };
     let rects = [];
