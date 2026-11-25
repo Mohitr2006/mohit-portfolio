@@ -1,4 +1,3 @@
-
 /* CONTACT PAGE */
 
 .contact-page {
@@ -142,7 +141,6 @@
 .contact-link-button:hover {
   background: #fff;
   color: #252a2e !important;
-  transform: translateY(-3px);
 }
 
 .contact-link-button span {
@@ -249,4 +247,16 @@
 .contact-link-button {
   margin-top: 7px !important;
   padding: 9px 17px !important;
+}
+
+
+/* NO HOVER MOVEMENT ON THE CARDS */
+
+.contact-card,
+.contact-card:hover,
+.contact-card > *,
+.contact-card > *:hover,
+.contact-specular,
+.contact-specular:hover {
+  transform: none !important;
 }
