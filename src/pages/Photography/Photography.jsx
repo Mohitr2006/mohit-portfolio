@@ -1,18 +1,20 @@
-
 import { useEffect, useRef, useState } from "react";
 import SpecularButton from "../../components/SpecularButton/SpecularButton";
 import "./Photography.css";
 
-const photos = Array.from({ length: 10 }, (_, index) => ({
-  src:
-    index === 0
-      ? "/images/photo1.png"
-      : `/images/photo${index + 1}.jpg`,
-  alt: `Photography ${index + 1}`,
-}));
+const photos = Array.from({ length: 10 }, (_, index) => {
+  const n = index + 1;
+  return {
+    full: n === 1 ? "/images/photo1.png" : `/images/photo${n}.jpg`,
+    thumb: `/images/thumbs/photo${n}.webp`,
+    alt: `Photography ${n}`,
+  };
+});
+
 function Photography() {
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [isClosing, setIsClosing] = useState(false);
+  const [loadedSrc, setLoadedSrc] = useState(null);
 
   const closeTimer = useRef(null);
   const closingRef = useRef(false);
@@ -22,6 +24,11 @@ function Photography() {
     closingRef.current = false;
     setIsClosing(false);
     setSelectedPhoto(photo);
+
+    // Start loading the original; swap it in only when it's ready
+    const img = new Image();
+    img.onload = () => setLoadedSrc(photo.full);
+    img.src = photo.full;
   };
 
   const closePhoto = () => {
@@ -145,17 +152,17 @@ function Photography() {
         {photos.map((photo) => (
           <button
             className="photo-item"
-            key={photo.src}
+            key={photo.full}
             type="button"
             onClick={() => openPhoto(photo)}
             aria-label={`View full image: ${photo.alt}`}
           >
-          <img
-            src={photo.src}
-            alt={photo.alt}
-            loading="lazy"
-            decoding="async"
-          />
+            <img
+              src={photo.thumb}
+              alt={photo.alt}
+              loading="lazy"
+              decoding="async"
+            />
 
             <div className="photo-hover-overlay">
               <span>View Full Image</span>
@@ -189,7 +196,11 @@ function Photography() {
 
           <img
             className="lightbox-image"
-            src={selectedPhoto.src}
+            src={
+              loadedSrc === selectedPhoto.full
+                ? selectedPhoto.full
+                : selectedPhoto.thumb
+            }
             alt={selectedPhoto.alt}
             onClick={(event) => event.stopPropagation()}
           />
