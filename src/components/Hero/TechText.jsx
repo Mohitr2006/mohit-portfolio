@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import './TechText.css';
 
@@ -67,6 +68,11 @@ const TechText = ({
   const canvasRef = useRef(null);
   const settingsRef = useRef(null);
   const wakeRef = useRef(() => {});
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     settingsRef.current = {
@@ -109,8 +115,14 @@ const TechText = ({
     if (!container || !canvas || !ctx || !scratchCtx) return undefined;
 
     const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
-    let width = 1;
-    let height = 1;
+    let cw = 1; // container size
+    let ch = 1;
+    let vw = 1; // window (canvas) size
+    let vh = 1;
+    let ox = 0; // container position in the window (css px)
+    let oy = 0;
+    let OX = 0; // same, in canvas pixels
+    let OY = 0;
     let dpr = 1;
     let raf = 0;
     let last = performance.now();
@@ -210,8 +222,8 @@ const TechText = ({
         s.dashGap,
         s.strokeWidth,
         s.lineStyle,
-        width,
-        height,
+        cw,
+        ch,
         dpr
       ].join('|');
       if (key === layoutKey && word) return word;
@@ -227,19 +239,19 @@ const TechText = ({
       let m = probe.measureText(s.text);
       const fit = Math.min(
         1,
-        (width * 0.9) / Math.max(m.actualBoundingBoxLeft + m.actualBoundingBoxRight, 1),
-        (height * 0.66) / Math.max(m.actualBoundingBoxAscent + m.actualBoundingBoxDescent, 1)
+        (cw * 0.9) / Math.max(m.actualBoundingBoxLeft + m.actualBoundingBoxRight, 1),
+        (ch * 0.66) / Math.max(m.actualBoundingBoxAscent + m.actualBoundingBoxDescent, 1)
       );
       const size = s.fontSize * fit;
       setFont(probe, s, size);
       m = probe.measureText(s.text);
       const inkWidth = m.actualBoundingBoxLeft + m.actualBoundingBoxRight;
       const inkHeight = m.actualBoundingBoxAscent + m.actualBoundingBoxDescent;
-      const margin = width * 0.05;
+      const margin = cw * 0.05;
       const start =
-        s.align === 'left' ? margin : s.align === 'right' ? width - margin - inkWidth : (width - inkWidth) / 2;
+        s.align === 'left' ? margin : s.align === 'right' ? cw - margin - inkWidth : (cw - inkWidth) / 2;
       const x = start + m.actualBoundingBoxLeft;
-      const baseline = (height - inkHeight) / 2 + m.actualBoundingBoxAscent;
+      const baseline = (ch - inkHeight) / 2 + m.actualBoundingBoxAscent;
       const xHeight = baseline - probe.measureText('x').actualBoundingBoxAscent;
       const capHeight = baseline - probe.measureText('H').actualBoundingBoxAscent;
       const ascender = baseline - probe.measureText('d').actualBoundingBoxAscent;
@@ -346,15 +358,15 @@ const TechText = ({
     const blit = (target, art, dx, dy, originX, originY) => {
       target.drawImage(
         art.image,
-        Math.round((art.left + dx) * dpr - originX),
-        Math.round((art.top + dy) * dpr - originY)
+        Math.round((art.left + dx) * dpr + OX - originX),
+        Math.round((art.top + dy) * dpr + OY - originY)
       );
     };
 
     const drawReveal = s => {
       const radius = s.reach * dpr;
-      const cx = lens.x * dpr;
-      const cy = lens.y * dpr;
+      const cx = lens.x * dpr + OX;
+      const cy = lens.y * dpr + OY;
       ctx.globalCompositeOperation = 'destination-out';
       ctx.fillStyle = falloff(ctx, cx, cy, radius, presence, s.softness);
       ctx.fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
@@ -454,7 +466,7 @@ const TechText = ({
       const y1 = crisp(frame.y1);
       const x2 = crisp(frame.x2);
       const y2 = crisp(frame.y2);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.setTransform(dpr, 0, 0, dpr, OX, OY);
       ctx.fillStyle = accent;
       ctx.strokeStyle = accent;
       ctx.lineWidth = 1;
@@ -514,8 +526,8 @@ const TechText = ({
       const pad = Math.max(12, view.size * 0.12);
       const x1 = Math.round(view.left - pad);
       const x2 = Math.round(view.right + pad);
-      const room = width - x2 > x1;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const room = cw - x2 > x1;
+      ctx.setTransform(dpr, 0, 0, dpr, OX, OY);
       ctx.strokeStyle = accent;
       ctx.fillStyle = accent;
       ctx.lineWidth = 1;
@@ -595,7 +607,7 @@ const TechText = ({
     const cellRect = (x, y, size) => {
       const left = Math.round(x * dpr);
       const top = Math.round(y * dpr);
-      return [left, top, Math.round((x + size) * dpr) - left, Math.round((y + size) * dpr) - top];
+      return [left + OX, top + OY, Math.round((x + size) * dpr) - left, Math.round((y + size) * dpr) - top];
     };
 
     const drawAssembling = (glyph, progress, accent) => {
@@ -631,8 +643,8 @@ const TechText = ({
 
     const drawFilling = (glyph, lead, progress, view) => {
       const art = glyph.fill;
-      const left = Math.floor(art.left * dpr);
-      const top = Math.floor(art.top * dpr);
+      const left = Math.floor(art.left * dpr) + OX;
+      const top = Math.floor(art.top * dpr) + OY;
       const w = art.image.width + 2;
       const h = art.image.height + 2;
       const fill = clamp01((progress - 0.24 - 0.28 * lead) / 0.48);
@@ -641,8 +653,8 @@ const TechText = ({
         const amount = smoothstep(0.3 * band.order, 0.3 * band.order + 0.4, fill);
         if (amount <= 0) continue;
         const span = (band.y1 - band.y0) * amount;
-        const y0 = Math.round((band.up ? band.y1 - span : band.y0) * dpr);
-        const y1 = Math.round((band.up ? band.y1 : band.y0 + span) * dpr);
+        const y0 = Math.round((band.up ? band.y1 - span : band.y0) * dpr) + OY;
+        const y1 = Math.round((band.up ? band.y1 : band.y0 + span) * dpr) + OY;
         if (y1 > y0) rects.push([y0, y1 - y0]);
       }
       const outline = smoothstep(0.08 + 0.2 * lead, 0.22 + 0.2 * lead, progress);
@@ -686,14 +698,24 @@ const TechText = ({
       if (!s) return;
       if (sizeDirty) {
         sizeDirty = false;
-        width = Math.max(1, container.clientWidth);
-        height = Math.max(1, container.clientHeight);
+        cw = Math.max(1, container.clientWidth);
+        ch = Math.max(1, container.clientHeight);
+        vw = Math.max(1, document.documentElement.clientWidth || window.innerWidth);
+        vh = Math.max(1, window.innerHeight);
         dpr = Math.min(window.devicePixelRatio || 1, 2);
-        const pixelWidth = Math.round(width * dpr);
-        const pixelHeight = Math.round(height * dpr);
+        const pixelWidth = Math.round(vw * dpr);
+        const pixelHeight = Math.round(vh * dpr);
         if (canvas.width !== pixelWidth) canvas.width = pixelWidth;
         if (canvas.height !== pixelHeight) canvas.height = pixelHeight;
+        canvas.style.width = `${vw}px`;
+        canvas.style.height = `${vh}px`;
       }
+      // where the container currently sits in the window (changes while scrolling)
+      const place = container.getBoundingClientRect();
+      ox = place.left;
+      oy = place.top;
+      OX = Math.round(ox * dpr);
+      OY = Math.round(oy * dpr);
       const dt = Math.min(0.05, Math.max(0.001, (now - last) / 1000));
       last = now;
       const { ink, accent } = palette(s);
@@ -761,6 +783,22 @@ const TechText = ({
         offset.x += velocity.x * dt;
         offset.y += velocity.y * dt;
         moving = true;
+      });
+
+      // letters can travel anywhere in the browser window, but never leave it
+      const EDGE = 14;
+      glyphs.forEach(glyph => {
+        const { box, offset, velocity } = glyph;
+        const loX = Math.min(0, EDGE - ox - box.x1);
+        const hiX = Math.max(0, vw - ox - EDGE - box.x2);
+        const loY = Math.min(0, EDGE - oy - box.y1);
+        const hiY = Math.max(0, vh - oy - EDGE - box.y2);
+        const x = Math.min(hiX, Math.max(loX, offset.x));
+        const y = Math.min(hiY, Math.max(loY, offset.y));
+        if (x !== offset.x) velocity.x = 0;
+        if (y !== offset.y) velocity.y = 0;
+        offset.x = x;
+        offset.y = y;
       });
 
       let typing = -1;
@@ -958,8 +996,13 @@ const TechText = ({
     const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(container);
     window.addEventListener('resize', resize, { passive: true });
+    window.addEventListener('scroll', wake, { passive: true });
     const intersectionObserver = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
+      if (!visible) {
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
       wake();
     });
     intersectionObserver.observe(container);
@@ -979,6 +1022,7 @@ const TechText = ({
       wakeRef.current = () => {};
       resizeObserver.disconnect();
       window.removeEventListener('resize', resize);
+      window.removeEventListener('scroll', wake);
       intersectionObserver.disconnect();
       themeObserver.disconnect();
       schemeQuery?.removeEventListener?.('change', wake);
@@ -990,12 +1034,13 @@ const TechText = ({
       container.removeEventListener('pointercancel', onUp);
       container.removeEventListener('pointerleave', onLeave);
     };
-  }, []);
+  }, [mounted]);
 
   return (
-    <div ref={containerRef} className={`tech-text ${className}`.trim()} style={style} role="img" aria-label={text}>
-      <canvas ref={canvasRef} className="tech-text-canvas" />
-    </div>
+    <>
+      <div ref={containerRef} className={`tech-text ${className}`.trim()} style={style} role="img" aria-label={text} />
+      {mounted && createPortal(<canvas ref={canvasRef} className="tech-text-canvas" aria-hidden="true" />, document.body)}
+    </>
   );
 };
 
