@@ -1,10 +1,25 @@
-
 .navbar-container {
   position: fixed;
   top: 30px;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, 0);
   z-index: 1000;
   width: max-content;
   max-width: calc(100vw - 32px);
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.25s ease;
+}
+
+/* slides up out of view while scrolling down */
+.navbar-container.navbar-hidden {
+  transform: translate(-50%, calc(-100% - 40px));
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar-container {
+    transition: none;
+  }
 }
